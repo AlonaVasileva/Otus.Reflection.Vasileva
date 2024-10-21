@@ -3,31 +3,56 @@ using System;
 using System.Diagnostics;
 using Newtonsoft.Json;
 
-class Program
+namespace Otus.Reflection.Vasileva
 {
-    static void Main()
+    class Program
     {
-        int iterations = 1000;
-        F obj = F.Get();
-
-        // Сериализация с использованием Newtonsoft.Json
-        Stopwatch stopwatch = Stopwatch.StartNew();
-        for (int i = 0; i < iterations; i++)
+        static void Main(string[] args)
         {
-            string json = JsonConvert.SerializeObject(obj);
-        }
-        stopwatch.Stop();
-        Console.WriteLine($"Время сериализации JSON: {stopwatch.ElapsedMilliseconds} ms");
+            var obj = F.Get();
+            int iterations = 100000;
 
-        // Десериализация с использованием Newtonsoft.Json
-        string jsonString = JsonConvert.SerializeObject(obj);
-        stopwatch.Restart();
-        for (int i = 0; i < iterations; i++)
-        {
-            F newObj = JsonConvert.DeserializeObject<F>(jsonString);
+            // Замер времени сериализации в CSV
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            for (int i = 0; i < iterations; i++)
+            {
+                var csv = CsvSerializer.Serialize(obj);
+            }
+            stopwatch.Stop();
+            Console.WriteLine($"Сериализация в CSV: {stopwatch.ElapsedMilliseconds} мс");
+
+            // Замер времени десериализации из CSV
+            string serializedData = CsvSerializer.Serialize(obj);
+            stopwatch.Restart();
+            for (int i = 0; i < iterations; i++)
+            {
+                var deserializedObj = CsvSerializer.Deserialize<F>(serializedData);
+            }
+            stopwatch.Stop();
+            Console.WriteLine($"Десериализация из CSV: {stopwatch.ElapsedMilliseconds} мс");
+
+            // Сравнение с Newtonsoft.Json
+            stopwatch.Reset();
+            stopwatch.Start();
+            for (int i = 0; i < iterations; i++)
+            {
+                var jsonSerialized = JsonConvert.SerializeObject(obj);
+            }
+            stopwatch.Stop();
+            Console.WriteLine($"Сериализация с Newtonsoft.Json: {stopwatch.ElapsedMilliseconds} мс");
+
+            stopwatch.Reset();
+            var json = JsonConvert.SerializeObject(obj);
+            stopwatch.Start();
+            for (int i = 0; i < iterations; i++)
+            {
+                var jsonObj = JsonConvert.DeserializeObject<F>(json);
+            }
+            stopwatch.Stop();
+            Console.WriteLine($"Десериализация с Newtonsoft.Json: {stopwatch.ElapsedMilliseconds} мс");
+
+            Console.ReadKey();
         }
-        stopwatch.Stop();
-        Console.WriteLine($"Время десериализации JSON: {stopwatch.ElapsedMilliseconds} ms");
-        Console.ReadKey();
     }
 }

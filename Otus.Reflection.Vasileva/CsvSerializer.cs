@@ -2,31 +2,36 @@
 using System.Reflection;
 using System.Text;
 
-public class CsvSerializer
+namespace Otus.Reflection.Vasileva
 {
-    public static string Serialize<T>(T obj)
+    public class CsvSerializer
     {
-        StringBuilder csv = new StringBuilder();
-        PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-        foreach (var prop in properties)
+        public static string Serialize<T>(T obj)
         {
-            csv.Append(prop.GetValue(obj));
-            csv.Append(",");
+            StringBuilder csv = new StringBuilder();
+            PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var prop in properties)
+            {
+                csv.Append(prop.GetValue(obj));
+                csv.Append(",");
+            }
+
+            return csv.ToString().TrimEnd(',');
         }
-        return csv.ToString().TrimEnd(',');
-    }
 
-    public static T Deserialize<T>(string csv) where T : new()
-    {
-        T obj = new T();
-        string[] values = csv.Split(',');
-        PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-        for (int i = 0; i < properties.Length && i < values.Length; i++)
+        public static T Deserialize<T>(string csv) where T : new()
         {
-            properties[i].SetValue(obj, Convert.ChangeType(values[i], properties[i].PropertyType));
+            T obj = new T();
+            string[] values = csv.Split(',');
+            PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            for (int i = 0; i < properties.Length && i < values.Length; i++)
+            {
+                properties[i].SetValue(obj, Convert.ChangeType(values[i], properties[i].PropertyType));
+            }
+
+            return obj;
         }
-        return obj;
     }
 }
