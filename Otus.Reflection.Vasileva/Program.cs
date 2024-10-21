@@ -12,7 +12,7 @@ namespace Otus.Reflection.Vasileva
             var obj = F.Get();
             int iterations = 100000;
 
-            // Замер времени сериализации в CSV
+            // Замер сериализации в CSV
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             for (int i = 0; i < iterations; i++)
@@ -22,7 +22,7 @@ namespace Otus.Reflection.Vasileva
             stopwatch.Stop();
             Console.WriteLine($"Сериализация в CSV: {stopwatch.ElapsedMilliseconds} мс");
 
-            // Замер времени десериализации из CSV
+            // Замер десериализации из CSV
             string serializedData = CsvSerializer.Serialize(obj);
             stopwatch.Restart();
             for (int i = 0; i < iterations; i++)
